@@ -68,6 +68,13 @@
       window.InsertClips(csInterface)
     });
 
+     $("#conform5").on("click", function(e) {
+      e.preventDefault();
+      var csInterface = new CSInterface();
+
+      window.ConformSubClips(csInterface)
+    });
+
   });
   </script>
   <script src="bundle.js"></script>
@@ -77,6 +84,7 @@
   <a href="javascript:history.go(0)">Refresh panel</a>
   <button id="conform3">CONFORM SOURCE</button>
   <button id="conform4">INSERT CLIPS</button>
+  <button id="conform5">INSERT SUB CLIPS</button>
 </body>
 <script>
 document.body.onbeforeunload = function() {

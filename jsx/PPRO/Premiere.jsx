@@ -529,6 +529,41 @@ $._PPP_ = {
     return JSON.stringify(newSubClip)
   },
 
+  createSubClipFromName: function(name, newSubClipName, startTimeSeconds, endTimeSeconds, binName, overwrite) {
+    var projectItem;
+    this.getAllRootItemMediaArray().forEach(function(child) {
+      if (child.treePath === treePath) {
+        projectItem = child;
+      }
+    });
+
+    projectItem = app.project.rootItem.children[0];
+    var newSubClip = projectItem.createSubClip(newSubClipName,
+      startTimeSeconds,
+      endTimeSeconds,
+      0,
+      1,
+      1);
+
+    if (binName) {
+      var bin = this.searchForBinWithName(binName);
+      if (bin) {
+        newSubClip.moveBin(bin);
+      }
+    }
+    var seq = app.project.activeSequence;
+    var vTrack1 = seq.videoTracks[0];
+    if (vTrack1.clips.numItems > 0) {
+      var lastClip = vTrack1.clips[(vTrack1.clips.numItems - 1)];
+      if (lastClip) {
+        vTrack1.insertClip(newSubClip, lastClip.end.seconds);
+      }
+    } else {
+      vTrack1.insertClip(newSubClip, '00;00;00;00');
+    }
+    return JSON.stringify(newSubClip)
+  },
+
   insertClipByTreePath: function(treePath, startTimeSeconds, endTimeSeconds) {
     var projectItem = this.projectItemFromPath(treePath);
     var seq = app.project.activeSequence;
