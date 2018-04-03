@@ -16,6 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "digitalanarchy.helpers": "file:../../Npm/utilities",
+    "lodash": "^4.17.5",
     "path-parse": "^1.0.5",
     "uuid": "^3.2.1",
     "xhr-request": "^1.1.0"
@@ -38,5 +40,20 @@
     "babelify": "^8.0.0",
     "npm-run-all": "^4.1.2",
     "watchify": "^3.11.0"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "plugins": [
+            "transform-object-rest-spread"
+          ],
+          "presets": [
+            "env"
+          ]
+        }
+      ]
+    ]
   }
 }

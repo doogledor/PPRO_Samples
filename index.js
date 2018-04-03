@@ -1,4 +1,6 @@
+const isArray = require('lodash/isArray');
 const { v4 } = require('uuid');
+const DA = require('digitalanarchy.helpers');
 const Parse = require('path-parse');
 
 const requestJSON = async function(url) {
@@ -7,56 +9,26 @@ const requestJSON = async function(url) {
   return json;
 };
 
-const insertClip = async (clip, conformingClips) => {
-  const { treePath } = await window.evalFunctionJSON('$._ext_PPRO_CONFORM.findClipByName', [
-    clip.clipName ? clip.clipName : Parse(clip.mediaPath).base,
-    true,
-  ]);
-  const inTime = clip.startTime.toFixed(3).toString();
-  const outTime = (clip.startTime + clip.duration).toFixed(3).toString();
-
+const insertClip = async clip => {
+  const clipData = await window.evalFunctionJSON('$._PPP_.findClipByName', [`${clip.clipName}.mp4`, true]);
+  const { treePath } = clipData;
+  const inTime = clip.inPoint;
+  const outTime = clip.inPoint + clip.duration;
   console.log(treePath);
+  console.log('clip.start', clip.start);
+  console.log('inTime', inTime);
+  console.log('outTime', outTime);
+  console.log('end', clip.end);
+
+  //const timeValues = await window.evalFunctionJSON('$._PPP_.extractFrameRate', [clip.clipName, true]);
+  /*console.log(treePath);
   console.log(inTime, outTime);
-  const timeValues = await window.evalFunctionJSON('$._ext_PPRO_CONFORM.extractFrameRateByName', [
-    clip.clipName,
-    true,
-  ]);
-  const timecode = window.DigitalAnarchy.Timecode.fromSeconds(inTime, {
-    frameRate: timeValues.frameRate,
-    dropFrame: timeValues.dropFrame,
-  });
+  console.log(timeValues);*/
+  // const timecode = window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame });
 
-  /*  return window.evalFunction('$._ext_PPRO_CONFORM.addClipToSequenceTimeline', [
-    treePath,
-    inTime,
-    outTime
-    //window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),
-    //window.DigitalAnarchy.Timecode.fromSeconds(outTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),
-  ]);*/
-
-  return window.evalFunction('$._ext_PPRO_CONFORM.addClipToSequenceMatch', [
-    treePath,
-    'Dhiraj.mp4',
-    //window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),
-    //window.DigitalAnarchy.Timecode.fromSeconds(outTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),
-  ]);
-};
-
-const insertSubClip = async (clip,binName) => {
-  console.log(clip);
-  const inTime = clip.startTime
-  const outTime = inTime + clip.duration
-  console.log(inTime);
-  console.log(outTime);
-  return window.evalFunction('$._ext_PPRO_CONFORM.createInsertSubClipFromName', [
-    clip.clipName,
-    `${clip.clipName}_sub`,
-    inTime,
-    outTime,
-    //window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),
-    //window.DigitalAnarchy.Timecode.fromSeconds(outTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),
-    binName
-  ]);
+  const inserted = await window.evalFunction('$._PPP_.addClipToSequenceTimeline', [treePath, clip.start, inTime, outTime]);
+  //await promiseDelay(1000);
+  return window.evalFunctionJSON('$._PPP_.conform', [treePath, clip.start, inTime, outTime, clip.end]);
 };
 
 window.InsertClips = async () => {
@@ -80,26 +52,61 @@ WE NEED TO CONVERT TO CLIP IN/OUT TIMES
 
 *************/
 
+const SIMULATE = {
+  removeWordsMiddle: (transcript, toRemove = 0, maxWordsPercent = 30) => {
+    const words = [...transcript.words];
+    let wordNumToRemove = !!toRemove
+      ? toRemove
+      : Math.floor(words.length * (Math.random() * maxWordsPercent / 100));
+    var _i = 0;
+    while (wordNumToRemove > 0) {
+      if (Math.random() > 0.5) {
+        words.splice(_i, 1);
+        wordNumToRemove--;
+      }
+      _i = (_i + 1) % words.length;
+    }
+    return { ...transcript, words };
+  },
+  removeRange: (transcript, range = [0, 0]) => {
+    const words = [...transcript.words];
+    if (range[1]) {
+      words.splice(range[0], range[1]);
+    }
+    return { ...transcript, words };
+  },
+};
+
 window.Conform = async () => {
-  const transcripts = await requestJSON('http://0.0.0.0:4433/output.json');
+  //const transcripts = await requestJSON('http://0.0.0.0:4433/transcript_data_raw.json');
+  const transcripts = await requestJSON('http://0.0.0.0:4433/flattened_raw.json');
+  const transcriptsAlter = await requestJSON('http://0.0.0.0:4433/flattened_altered.json');
+  //const transcriptsAlter = await requestJSON('http://0.0.0.0:4433/transcript_data_altered.json');
+  //const transcriptsAlter = [...transcripts].map(transcript => SIMULATE.removeRange(transcript, [4, 8]));
+  //const transcriptsAlter = [...transcripts].map(transcript => SIMULATE.removeWordsMiddle(transcript,0));
+  // console.log(transcriptsAlter);
   const clipJson = await requestJSON('http://0.0.0.0:4433/clipData.json');
-  const conformingClips = window.DigitalAnarchy.Conforming.fromJSON(transcripts, clipJson);
-  const seqName = 'Conformed sequence';
+  const conformingClips = DA.Conforming.compare2(transcripts, transcriptsAlter, clipJson, {useWordGaps: false});
+  console.log(conformingClips);
+  const presetName = 'PProPanel';
+  const seqName = 'Conformed sequence 3';
   const binName = 'newBin';
   const seqID = uuidv4();
 
-  const userName = await window.evalFunction('$._ext_PPRO_CONFORM.getUserName', []);
+  const userName = await window.evalFunction('$._PPP_.getUserName', []);
 
   const csInterface = new CSInterface();
   const OSVersion = csInterface.getOSInformation();
   const sep = OSVersion.indexOf('Windows') >= 0 ? '\\' : '/';
-  const v = csInterface.hostEnvironment.appVersion.substring(0, 4);
-  var presetPath = `${csInterface.getSystemPath(SystemPath.MY_DOCUMENTS)}${sep}Adobe${sep}Premiere\ Pro${sep}${v}${sep}Profile-${userName}${sep}Settings${sep}Custom${sep}Alexia.sqpreset`;
-  // await window.evalFunction('$._ext_PPRO_CONFORM.cloneSequence', [])
+  const v = csInterface.hostEnvironment.appVersion.substring(0, 2) + '.0';
+  var presetPath = `${csInterface.getSystemPath(
+    SystemPath.MY_DOCUMENTS,
+  )}${sep}Adobe${sep}Premiere\ Pro${sep}${v}${sep}Profile-${userName}${sep}Settings${sep}Custom${sep}${presetName}.sqpreset`;
+  // await window.evalFunction('$._PPP_.cloneSequence', [])
 
-  //const rr = await window.evalFunctionJSON('$._ext_PPRO_CONFORM.findClipByName', ["Alexia", true]);
+  //const rr = await window.evalFunctionJSON('$._PPP_.findClipByName', ["Alexia", true]);
   //console.log(rr);
-  /* const seqResponse = await window.evalFunction('$._ext_PPRO_CONFORM.createSequence', [
+  /* const seqResponse = await window.evalFunction('$._PPP_.createSequence', [
     seqName,
     seqID,
     true,
@@ -107,48 +114,19 @@ window.Conform = async () => {
     true
   ]);*/
 
-  const seqResponse = await window.evalFunctionJSON('$._ext_PPRO_CONFORM.createSequenceFromPreset', [
+  const seqResponse = await window.evalFunctionJSON('$._PPP_.createSequenceFromPreset', [
     seqName,
     presetPath,
-    seqName,
+    true
   ]);
-  console.log(seqResponse);
-  const insertResponse = await Promise.all(
-    conformingClips.slice(0, 1).map(clip => insertClip(clip, conformingClips))
+
+  const insertResponse = await conformingClips.slice(0,6).reduce(
+    (promise, clip) => promise.then(result => insertClip(clip).then(Array.prototype.concat.bind(result))),
+    Promise.resolve([]),
   );
   console.log(insertResponse);
   // clipJson.forEach(createClip);
 
   /*console.log(clipJson);
   console.log(clipNames);*/
-};
-
-window.ConformSubClips = async () => {
-  const transcripts = await requestJSON('http://0.0.0.0:4433/output.json');
-  const clipJson = await requestJSON('http://0.0.0.0:4433/clipData.json');
-  const conformingClips = window.DigitalAnarchy.Conforming.fromJSON(transcripts, clipJson);
-  const seqName = 'Conformed sequence';
-  const binName = 'newBin';
-  const seqID = uuidv4();
-
-  const userName = await window.evalFunction('$._ext_PPRO_CONFORM.getUserName', []);
-
-  const csInterface = new CSInterface();
-  const OSVersion = csInterface.getOSInformation();
-  const sep = OSVersion.indexOf('Windows') >= 0 ? '\\' : '/';
-  const v = csInterface.hostEnvironment.appVersion.substring(0, 4);
-  var presetPath = `${csInterface.getSystemPath(SystemPath.MY_DOCUMENTS)}${sep}Adobe${sep}Premiere\ Pro${sep}${v}${sep}Profile-${userName}${sep}Settings${sep}Custom${sep}Alexia.sqpreset`;
-  const seqResponse = await window.evalFunctionJSON('$._ext_PPRO_CONFORM.createSequenceFromPreset', [
-    seqName,
-    presetPath,
-    seqName,
-    false,
-    binName
-  ]);
-
-  const insertResponse = await Promise.all(
-    conformingClips.map(clip => insertSubClip(clip, binName))
-  );
-  //await window.evalFunction('$._ext_PPRO_CONFORM.addSubClip', []);
-  console.log(insertResponse);
 };

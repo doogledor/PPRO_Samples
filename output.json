@@ -251,61 +251,8 @@
     "transcriptIndex": 1,
     "transcriptId": "985d63b2-9a89-47e5-a49f-16b3e8f5a60e",
     "nextStartTime": 7.95795
-  },
-  {
-    "text": "similar",
-    "startTime": 7.95795,
-    "endTime": 8.37503333333333,
-    "confidence": 1,
-    "transcriptIndex": 1,
-    "transcriptId": "985d63b2-9a89-47e5-a49f-16b3e8f5a60e",
-    "nextStartTime": 8.37503333333333
-  },
-  {
-    "text": "companies",
-    "startTime": 8.37503333333333,
-    "endTime": 8.942266666666661,
-    "confidence": 1,
-    "transcriptIndex": 1,
-    "transcriptId": "985d63b2-9a89-47e5-a49f-16b3e8f5a60e",
-    "nextStartTime": 8.94226666666667
-  },
-  {
-    "text": "is",
-    "startTime": 8.94226666666667,
-    "endTime": 9.15915,
-    "confidence": 1,
-    "transcriptIndex": 1,
-    "transcriptId": "985d63b2-9a89-47e5-a49f-16b3e8f5a60e",
-    "nextStartTime": 9.2092
-  },
-  {
-    "text": "extremely",
-    "startTime": 9.2092,
-    "endTime": 9.87653333333333,
-    "confidence": 1,
-    "transcriptIndex": 1,
-    "transcriptId": "985d63b2-9a89-47e5-a49f-16b3e8f5a60e",
-    "nextStartTime": 9.87653333333333
-  },
-  {
-    "text": "extremely",
-    "startTime": 9.87653333333333,
-    "endTime": 10.4771333333333,
-    "confidence": 1,
-    "transcriptIndex": 1,
-    "transcriptId": "985d63b2-9a89-47e5-a49f-16b3e8f5a60e",
-    "nextStartTime": 10.4771333333333
-  },
-  {
-    "text": "valuable.",
-    "startTime": 10.4771333333333,
-    "endTime": 11.01099999999997,
-    "confidence": 1,
-    "transcriptIndex": 1,
-    "transcriptId": "985d63b2-9a89-47e5-a49f-16b3e8f5a60e",
-    "nextStartTime": 11.2203666666667
-  }],
+  }
+  ],
   "speaker": "0",
   "id": "985d63b2-9a89-47e5-a49f-16b3e8f5a60e",
   "clipName": "Alexia",
