@@ -19,16 +19,15 @@ const loadJSONTS = () => {
 };
 
 const insertClip = async clip => {
-  const clipData = await window.evalFunctionJSON('$._PPP_.findClipByName', [`${clip.clipName}.mp4`, true]);
-  const { treePath } = clipData;
-  const inTime = clip.inPoint;
-  const outTime = clip.inPoint + clip.duration;
+  const clipData = await window.evalFunctionJSON('$._PPP_.findClipByName', [
+    `${clip.clipName}.mp4`,
+    true,
+  ]);
+  const {treePath} = clipData
+  console.log(clipData);
   console.log(treePath);
-  console.log('clip.start', clip.start);
-  console.log('inTime', inTime);
-  console.log('outTime', outTime);
-  console.log('end', clip.end);
-  console.log('clip.maxDuration', clip.maxDuration);
+  const inTime = clip.startTime.toFixed(3).toString()
+  const outTime = (clip.startTime + clip.duration).toFixed(3).toString()
 
   //const timeValues = await window.evalFunctionJSON('$._PPP_.extractFrameRate', [clip.clipName, true]);
   /*console.log(treePath);
@@ -38,9 +37,10 @@ const insertClip = async clip => {
 
   const inserted = await window.evalFunction('$._PPP_.addClipToSequenceTimeline', [
     treePath,
-    clip.start,
-    inTime,
-    outTime,
+    window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: 59.7, dropFrame: false }),
+    window.DigitalAnarchy.Timecode.fromSeconds(outTime, { frameRate: 59.7, dropFrame: false }),
+    /*window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),
+window.DigitalAnarchy.Timecode.fromSeconds(outTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),*/
   ]);
   await promiseDelay(50);
   const resp = window.evalFunctionJSON('$._PPP_.conform', [treePath, clip.start, inTime, outTime, clip.end]);
@@ -105,13 +105,9 @@ window.Conform = async () => {
   //const transcriptsAlter = [...transcripts].map(transcript => SIMULATE.removeWordsMiddle(transcript,0));
   // console.log(transcriptsAlter);
   const clipJson = await requestJSON('http://0.0.0.0:4433/clipData.json');
-  const conformingClips = DA.Conforming.compare2(transcripts, transcriptsAlter, clipJson, {
-    useWordGaps: false,
-  });
-  loadJSONTS()
-  console.log(conformingClips);
+  const conformingClips = window.DigitalAnarchy.Conforming.fromJSON(transcripts, clipJson)
   const presetName = 'PProPanel';
-  const seqName = 'Conformed sequence 3';
+  const seqName = 'Conformed sequence';
   const binName = 'newBin';
   const seqID = uuidv4();
 
@@ -120,10 +116,9 @@ window.Conform = async () => {
   const csInterface = new CSInterface();
   const OSVersion = csInterface.getOSInformation();
   const sep = OSVersion.indexOf('Windows') >= 0 ? '\\' : '/';
-  const v = csInterface.hostEnvironment.appVersion.substring(0, 2) + '.0';
-  var presetPath = `${csInterface.getSystemPath(
-    SystemPath.MY_DOCUMENTS,
-  )}${sep}Adobe${sep}Premiere\ Pro${sep}${v}${sep}Profile-${userName}${sep}Settings${sep}Custom${sep}${presetName}.sqpreset`;
+  const v = csInterface.hostEnvironment.appVersion.substring(0, 2) + '.0'
+  var presetPath = `${csInterface.getSystemPath(SystemPath.MY_DOCUMENTS)}${sep}Adobe${sep}Premiere\ Pro${sep}${v}${sep}Profile-${userName}${sep}Settings${sep}Custom${sep}${presetName}.sqpreset`;
+  console.log(presetPath);
   // await window.evalFunction('$._PPP_.cloneSequence', [])
 
   //const rr = await window.evalFunctionJSON('$._PPP_.findClipByName', ["Alexia", true]);
@@ -142,11 +137,7 @@ window.Conform = async () => {
     true,
   ]);
 
-  const insertResponse = await conformingClips.reduce(
-    (promise, clip) => promise.then(result => insertClip(clip).then(Array.prototype.concat.bind(result))),
-    Promise.resolve([]),
-  );
-  console.log(insertResponse);
+  const insertResponse = await conformingClips.reduce((promise, clip) => promise.then(result => insertClip(clip).then(Array.prototype.concat.bind(result))), Promise.resolve([]));
   // clipJson.forEach(createClip);
 
   /*console.log(clipJson);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict';
 
@@ -120,6 +121,93 @@ var promiseDelay = function promiseDelay(delay) {
   });
 };
 
+=======
+(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+'use strict';
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+var _require = require('uuid'),
+    v4 = _require.v4;
+
+var Parse = require('path-parse');
+
+var requestJSON = function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url) {
+    var response, json;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return fetch(url);
+
+          case 2:
+            response = _context.sent;
+            _context.next = 5;
+            return response.json();
+
+          case 5:
+            json = _context.sent;
+            return _context.abrupt('return', json);
+
+          case 7:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+
+  return function requestJSON(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var insertClip = function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(clip) {
+    var clipData, treePath, inTime, outTime;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return window.evalFunctionJSON('$._PPP_.findClipByName', [clip.clipName + '.mp4', true]);
+
+          case 2:
+            clipData = _context2.sent;
+            treePath = clipData.treePath;
+
+            console.log(clipData);
+            console.log(treePath);
+            inTime = clip.startTime.toFixed(3).toString();
+            outTime = (clip.startTime + clip.duration).toFixed(3).toString();
+
+            //const timeValues = await window.evalFunctionJSON('$._PPP_.extractFrameRate', [clip.clipName, true]);
+            /*console.log(treePath);
+            console.log(inTime, outTime);
+            console.log(timeValues);*/
+            // const timecode = window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame });
+
+            return _context2.abrupt('return', window.evalFunction('$._PPP_.addClipToSequenceTimeline', [treePath, window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: 59.7, dropFrame: false }), window.DigitalAnarchy.Timecode.fromSeconds(outTime, { frameRate: 59.7, dropFrame: false })]
+            /*window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),
+            window.DigitalAnarchy.Timecode.fromSeconds(outTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame }),*/
+            ));
+
+          case 9:
+          case 'end':
+            return _context2.stop();
+        }
+      }
+    }, _callee2, undefined);
+  }));
+
+  return function insertClip(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+>>>>>>> 087b2bdb38847c209f5a0d66645d0dcb6747e021
 window.InsertClips = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
   return regeneratorRuntime.wrap(function _callee3$(_context3) {
     while (1) {
@@ -144,6 +232,7 @@ WE NEED TO CONVERT TO CLIP IN/OUT TIMES
 
 *************/
 
+<<<<<<< HEAD
 var SIMULATE = {
   removeWordsMiddle: function removeWordsMiddle(transcript) {
     var toRemove = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -174,16 +263,25 @@ var SIMULATE = {
 
 window.Conform = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
   var transcripts, transcriptsAlter, clipJson, conformingClips, presetName, seqName, binName, seqID, userName, csInterface, OSVersion, sep, v, presetPath, seqResponse, insertResponse;
+=======
+window.Conform = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+  var transcripts, clipJson, conformingClips, presetName, seqName, binName, seqID, userName, csInterface, OSVersion, sep, v, presetPath, seqResponse, insertResponse;
+>>>>>>> 087b2bdb38847c209f5a0d66645d0dcb6747e021
   return regeneratorRuntime.wrap(function _callee4$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
         case 0:
           _context4.next = 2;
+<<<<<<< HEAD
           return requestJSON('http://0.0.0.0:4433/flattened_raw.json');
+=======
+          return requestJSON('http://0.0.0.0:4433/output.json');
+>>>>>>> 087b2bdb38847c209f5a0d66645d0dcb6747e021
 
         case 2:
           transcripts = _context4.sent;
           _context4.next = 5;
+<<<<<<< HEAD
           return requestJSON('http://0.0.0.0:4433/flattened_altered.json');
 
         case 5:
@@ -207,12 +305,32 @@ window.Conform = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(functio
           return window.evalFunction('$._PPP_.getUserName', []);
 
         case 18:
+=======
+          return requestJSON('http://0.0.0.0:4433/clipData.json');
+
+        case 5:
+          clipJson = _context4.sent;
+          conformingClips = window.DigitalAnarchy.Conforming.fromJSON(transcripts, clipJson);
+          presetName = 'PProPanel';
+          seqName = 'Conformed sequence';
+          binName = 'newBin';
+          seqID = uuidv4();
+          _context4.next = 13;
+          return window.evalFunction('$._PPP_.getUserName', []);
+
+        case 13:
+>>>>>>> 087b2bdb38847c209f5a0d66645d0dcb6747e021
           userName = _context4.sent;
           csInterface = new CSInterface();
           OSVersion = csInterface.getOSInformation();
           sep = OSVersion.indexOf('Windows') >= 0 ? '\\' : '/';
           v = csInterface.hostEnvironment.appVersion.substring(0, 2) + '.0';
           presetPath = '' + csInterface.getSystemPath(SystemPath.MY_DOCUMENTS) + sep + 'Adobe' + sep + 'Premiere Pro' + sep + v + sep + 'Profile-' + userName + sep + 'Settings' + sep + 'Custom' + sep + presetName + '.sqpreset';
+<<<<<<< HEAD
+=======
+
+          console.log(presetPath);
+>>>>>>> 087b2bdb38847c209f5a0d66645d0dcb6747e021
           // await window.evalFunction('$._PPP_.cloneSequence', [])
 
           //const rr = await window.evalFunctionJSON('$._PPP_.findClipByName', ["Alexia", true]);
@@ -225,18 +343,28 @@ window.Conform = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(functio
             true
           ]);*/
 
+<<<<<<< HEAD
           _context4.next = 26;
           return window.evalFunctionJSON('$._PPP_.createSequenceFromPreset', [seqName, presetPath, true]);
 
         case 26:
           seqResponse = _context4.sent;
           _context4.next = 29;
+=======
+          _context4.next = 22;
+          return window.evalFunctionJSON('$._PPP_.createSequenceFromPreset', [seqName, presetPath]);
+
+        case 22:
+          seqResponse = _context4.sent;
+          _context4.next = 25;
+>>>>>>> 087b2bdb38847c209f5a0d66645d0dcb6747e021
           return conformingClips.reduce(function (promise, clip) {
             return promise.then(function (result) {
               return insertClip(clip).then(Array.prototype.concat.bind(result));
             });
           }, Promise.resolve([]));
 
+<<<<<<< HEAD
         case 29:
           insertResponse = _context4.sent;
 
@@ -247,6 +375,12 @@ window.Conform = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(functio
           console.log(clipNames);*/
 
         case 31:
+=======
+        case 25:
+          insertResponse = _context4.sent;
+
+        case 26:
+>>>>>>> 087b2bdb38847c209f5a0d66645d0dcb6747e021
         case 'end':
           return _context4.stop();
       }
@@ -254,6 +388,7 @@ window.Conform = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(functio
   }, _callee4, undefined);
 }));
 
+<<<<<<< HEAD
 },{"digitalanarchy.helpers":12,"fs":2,"lodash/isArray":3,"path":4,"path-parse":5,"uuid":7}],2:[function(require,module,exports){
 
 },{}],3:[function(require,module,exports){
@@ -610,6 +745,9 @@ module.exports.win32 = win32.parse;
 
 }).call(this,require('_process'))
 },{"_process":6}],6:[function(require,module,exports){
+=======
+},{"path-parse":3,"uuid":4}],2:[function(require,module,exports){
+>>>>>>> 087b2bdb38847c209f5a0d66645d0dcb6747e021
 // shim for using process in browser
 var process = module.exports = {};
 
