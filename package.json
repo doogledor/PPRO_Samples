@@ -18,6 +18,7 @@
   "dependencies": {
     "digitalanarchy.helpers": "file:../../Npm/utilities",
     "lodash": "^4.17.5",
+    "node-dir": "^0.1.17",
     "path-parse": "^1.0.5",
     "uuid": "^3.2.1",
     "xhr-request": "^1.1.0"

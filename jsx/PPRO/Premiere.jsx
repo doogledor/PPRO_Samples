@@ -766,10 +766,10 @@ $._PPP_ = {
     );*/
 
     var videoClip =
-      vTrack1.clips[vTrack1.clips.numItems-1]
+      vTrack1.clips[vTrack1.clips.numItems-1];
 
       var audioClip =
-      aTrack1.clips[aTrack1.clips.numItems-1]
+      aTrack1.clips[aTrack1.clips.numItems-1];
 
     var s = videoClip.start;
     var e = videoClip.end;

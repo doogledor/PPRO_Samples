@@ -1,3 +1,5 @@
+var fs = require('fs');
+const path = require('path');
 const isArray = require('lodash/isArray');
 const { v4 } = require('uuid');
 const DA = require('digitalanarchy.helpers');
@@ -7,6 +9,13 @@ const requestJSON = async function(url) {
   const response = await fetch(url);
   const json = await response.json();
   return json;
+};
+console.log(fs);
+
+const loadJSONTS = () => {
+  const csInterface = new CSInterface();
+  var file = fs.readFileSync(path.join(csInterface.getSystemPath(SystemPath.MY_DOCUMENTS), 'Transcriptive', 'Alexia.json'))
+  console.log(file);
 };
 
 const insertClip = async clip => {
@@ -19,6 +28,7 @@ const insertClip = async clip => {
   console.log('inTime', inTime);
   console.log('outTime', outTime);
   console.log('end', clip.end);
+  console.log('clip.maxDuration', clip.maxDuration);
 
   //const timeValues = await window.evalFunctionJSON('$._PPP_.extractFrameRate', [clip.clipName, true]);
   /*console.log(treePath);
@@ -26,10 +36,19 @@ const insertClip = async clip => {
   console.log(timeValues);*/
   // const timecode = window.DigitalAnarchy.Timecode.fromSeconds(inTime, { frameRate: timeValues.frameRate, dropFrame: timeValues.dropFrame });
 
-  const inserted = await window.evalFunction('$._PPP_.addClipToSequenceTimeline', [treePath, clip.start, inTime, outTime]);
-  //await promiseDelay(1000);
-  return window.evalFunctionJSON('$._PPP_.conform', [treePath, clip.start, inTime, outTime, clip.end]);
+  const inserted = await window.evalFunction('$._PPP_.addClipToSequenceTimeline', [
+    treePath,
+    clip.start,
+    inTime,
+    outTime,
+  ]);
+  await promiseDelay(50);
+  const resp = window.evalFunctionJSON('$._PPP_.conform', [treePath, clip.start, inTime, outTime, clip.end]);
+  await promiseDelay(50);
+  return resp;
 };
+
+const promiseDelay = delay => new Promise(fulfill => setTimeout(fulfill, delay));
 
 window.InsertClips = async () => {
   /* const response = await request('http://0.0.0.0:4433/output.json');
@@ -86,7 +105,10 @@ window.Conform = async () => {
   //const transcriptsAlter = [...transcripts].map(transcript => SIMULATE.removeWordsMiddle(transcript,0));
   // console.log(transcriptsAlter);
   const clipJson = await requestJSON('http://0.0.0.0:4433/clipData.json');
-  const conformingClips = DA.Conforming.compare2(transcripts, transcriptsAlter, clipJson, {useWordGaps: false});
+  const conformingClips = DA.Conforming.compare2(transcripts, transcriptsAlter, clipJson, {
+    useWordGaps: false,
+  });
+  loadJSONTS()
   console.log(conformingClips);
   const presetName = 'PProPanel';
   const seqName = 'Conformed sequence 3';
@@ -117,10 +139,10 @@ window.Conform = async () => {
   const seqResponse = await window.evalFunctionJSON('$._PPP_.createSequenceFromPreset', [
     seqName,
     presetPath,
-    true
+    true,
   ]);
 
-  const insertResponse = await conformingClips.slice(0,6).reduce(
+  const insertResponse = await conformingClips.reduce(
     (promise, clip) => promise.then(result => insertClip(clip).then(Array.prototype.concat.bind(result))),
     Promise.resolve([]),
   );
