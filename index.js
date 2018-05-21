@@ -4,13 +4,11 @@ const isArray = require('lodash/isArray');
 const { v4 } = require('uuid');
 const DA = require('digitalanarchy.helpers');
 const Parse = require('path-parse');
-
 const requestJSON = async function(url) {
   const response = await fetch(url);
   const json = await response.json();
   return json;
 };
-console.log(fs);
 
 const loadJSONTS = () => {
   const csInterface = new CSInterface();
@@ -98,14 +96,17 @@ const SIMULATE = {
 
 window.Conform = async () => {
   //const transcripts = await requestJSON('http://0.0.0.0:4433/transcript_data_raw.json');
-  const transcripts = await requestJSON('http://0.0.0.0:4433/flattened_raw.json');
-  const transcriptsAlter = await requestJSON('http://0.0.0.0:4433/flattened_altered.json');
+  const transcript = await requestJSON('http://0.0.0.0:4433/json/transcript.json');
+  const parsed = await DA.WatsonPostprocess.watsonPostprocess(transcript, 'en-GB')
+  console.log(parsed);
+  return
+  // const transcriptsAlter = await requestJSON('http://0.0.0.0:4433/flattened_altered.json');
   //const transcriptsAlter = await requestJSON('http://0.0.0.0:4433/transcript_data_altered.json');
   //const transcriptsAlter = [...transcripts].map(transcript => SIMULATE.removeRange(transcript, [4, 8]));
   //const transcriptsAlter = [...transcripts].map(transcript => SIMULATE.removeWordsMiddle(transcript,0));
   // console.log(transcriptsAlter);
-  const clipJson = await requestJSON('http://0.0.0.0:4433/clipData.json');
-  const conformingClips = window.DigitalAnarchy.Conforming.fromJSON(transcripts, clipJson)
+  // const clipJson = await requestJSON('http://0.0.0.0:4433/clipData.json');
+  const conformingClips = DA.Conforming.fromJSON(transcripts, clipJson)
   const presetName = 'PProPanel';
   const seqName = 'Conformed sequence';
   const binName = 'newBin';
@@ -137,7 +138,7 @@ window.Conform = async () => {
     true,
   ]);
 
-  const insertResponse = await conformingClips.reduce((promise, clip) => promise.then(result => insertClip(clip).then(Array.prototype.concat.bind(result))), Promise.resolve([]));
+  //const insertResponse = await conformingClips.reduce((promise, clip) => promise.then(result => insertClip(clip).then(Array.prototype.concat.bind(result))), Promise.resolve([]));
   // clipJson.forEach(createClip);
 
   /*console.log(clipJson);
