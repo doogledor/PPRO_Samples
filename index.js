@@ -97,7 +97,7 @@ const SIMULATE = {
 window.Conform = async () => {
   //const transcripts = await requestJSON('http://0.0.0.0:4433/transcript_data_raw.json');
   const transcript = await requestJSON('http://0.0.0.0:4433/json/transcript.json');
-  const parsed = await DA.WatsonPostprocess.watsonPostprocess(transcript, 'en-GB')
+  const parsed = await DA.WatsonPostprocess.watsonPostprocess(transcript, 'en-GB', 0)
   console.log(parsed);
   return
   // const transcriptsAlter = await requestJSON('http://0.0.0.0:4433/flattened_altered.json');
@@ -106,7 +106,7 @@ window.Conform = async () => {
   //const transcriptsAlter = [...transcripts].map(transcript => SIMULATE.removeWordsMiddle(transcript,0));
   // console.log(transcriptsAlter);
   // const clipJson = await requestJSON('http://0.0.0.0:4433/clipData.json');
-  const conformingClips = DA.Conforming.fromJSON(transcripts, clipJson)
+  const conformingClips = DA.Conforming.fromJSON(transcripts, clipJson, 0)
   const presetName = 'PProPanel';
   const seqName = 'Conformed sequence';
   const binName = 'newBin';
